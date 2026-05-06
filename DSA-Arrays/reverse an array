@@ -24,14 +24,11 @@ public class HelloWorld
 class Solution {
     public void reverseArray(int[] arr) {
       
-      LengthofArray = arr.Length;
-      int temp = 0;
-      
-      for(int i = 0 ; i < LengthofArray/2 ; i++){
-         
-        temp = arr[i];
-        arr[i] = arr[i - temp - 1];
-        arr[i - temp - 1] = temp;
+        Array.Reverse(arr);
+        foreach (int num in arr)
+        {
+            Console.WriteLine(num + " ");
+        }
 
       }
         
