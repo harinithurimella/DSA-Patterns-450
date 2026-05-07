@@ -1,0 +1,35 @@
+// Online C# Editor for free
+// Write, Edit and Run your C# code using C# Online Compiler
+
+using System;
+
+public class HelloWorld
+{
+    public static void Main(string[] args)
+    {
+        int[] arr = {-2,1,6,-4,-3,2,9,-5,-6,6,2,4,-9 };
+        
+        int left = 0 ;
+        int right = arr.Length-1;
+        
+      while(left <= right){
+        
+        if(arr[left] < 0){
+            left ++;
+        }
+        else if (arr[right] > 0){
+            right --;
+        }
+        else {
+            int temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+            
+        }
+        }
+        foreach(int i in arr){
+            Console.WriteLine(i);
+        }
+    }        
+        
+    }
