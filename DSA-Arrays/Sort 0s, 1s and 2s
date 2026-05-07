@@ -1,0 +1,40 @@
+class Solution {
+    public void sort012(int[] arr) {
+        int arrLength = arr.Length;
+        int count0 = 0;
+        int count1 = 0;
+        int count2 = 0;
+        int index = 0;
+        
+        for(int i = 0 ; i < arr.Length ; i++){
+            if(arr[i] == 0){
+                count0 ++;
+            }
+            if(arr[i] == 1){
+                count1 ++;
+            }
+            
+            if(arr[i] == 2){
+                count2 ++;
+            }
+            
+        }
+        
+        for(int i = 0 ; i < count0 ; i ++){
+           arr[index]  = 0;
+           index++;
+        }
+         for(int i = 0 ; i < count1 ; i ++){
+           arr[index]  = 1;
+           index++;
+        }
+        for(int i = 0 ; i < count2 ; i ++){
+           arr[index]  = 2;
+           index++;
+        }
+        
+    
+        
+        
+    }
+}
