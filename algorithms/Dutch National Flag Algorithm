@@ -1,0 +1,78 @@
+Use the Dutch National Flag Algorithm when the array contains only 3 unique values like 0, 1, and 2.
+
+
+This algorithm is useful when the problem asks for:
+
+
+sorting in one pass
+
+
+O(n) time complexity
+
+
+O(1) extra space
+
+
+in-place sorting without using another array
+
+
+
+
+The idea is to divide the array into 3 parts:
+
+
+left side for 0s
+
+
+middle for 1s
+
+
+right side for 2s
+
+
+
+
+We use three pointers:
+
+
+low → position for next 0
+
+
+mid → current element
+
+
+high → position for next 2
+
+
+
+
+While traversing:
+
+
+if element is 0, swap with low
+
+
+if element is 1, move ahead
+
+
+if element is 2, swap with high
+
+
+
+
+This algorithm is called the Dutch National Flag Algorithm because it partitions elements into three groups similar to the three colors of the Dutch flag.
+
+
+Common interview problems using this approach:
+
+
+Sort Colors
+
+
+Sort 0s, 1s, and 2s
+
+
+Three-way partitioning problems
+
+
+
