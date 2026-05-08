@@ -1,0 +1,17 @@
+public class Solution {
+    public List<int> findUnion(int[] a, int[] b) {
+       HashSet<int> resultHash = new HashSet<int>();
+       
+       foreach(int i in a ){
+           resultHash.Add(i);
+       }
+       foreach(int i in b){
+           resultHash.Add(i);
+       }
+       
+       List<int> result = new List<int>(resultHash);
+       
+       result.Sort();
+        return result;
+    }
+}
