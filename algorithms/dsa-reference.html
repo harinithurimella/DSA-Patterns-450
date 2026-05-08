@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Fraunces:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f11;
+    --surface: #18181c;
+    --surface2: #22222a;
+    --border: #2e2e38;
+    --accent: #a78bfa;
+    --accent2: #34d399;
+    --accent3: #fb923c;
+    --accent4: #60a5fa;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --tag-bg: #1e1e28;
+    --code-bg: #13131a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* SIDEBAR */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  .sidebar-logo {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .sidebar-logo span { color: var(--text); font-size: 12px; font-family: 'DM Sans'; font-weight: 300; display: block; margin-top: 2px; }
+  .sidebar-search {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-search input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'DM Sans';
+    outline: none;
+    transition: border-color .2s;
+  }
+  .sidebar-search input::placeholder { color: var(--muted); }
+  .sidebar-search input:focus { border-color: var(--accent); }
+  .sidebar-section { padding: 6px 0; }
+  .sidebar-heading {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 20px 4px;
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 20px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all .15s;
+    text-decoration: none;
+  }
+  .sidebar-link:hover { color: var(--text); background: var(--surface2); }
+  .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(167,139,250,0.06); }
+  .sidebar-link .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+    transition: background .15s;
+  }
+  .sidebar-link.active .dot, .sidebar-link:hover .dot { background: currentColor; }
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .add-btn {
+    width: 100%;
+    padding: 8px;
+    background: var(--accent);
+    color: #0f0f11;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans';
+    cursor: pointer;
+    transition: opacity .2s;
+  }
+  .add-btn:hover { opacity: 0.85; }
+
+  /* MAIN */
+  .main {
+    margin-left: 240px;
+    flex: 1;
+    padding: 0;
+  }
+  .topbar {
+    position: sticky; top: 0;
+    background: rgba(15,15,17,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    z-index: 50;
+  }
+  .topbar-tabs { display: flex; gap: 2px; }
+  .topbar-tab {
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: 'DM Sans';
+    transition: all .15s;
+  }
+  .topbar-tab:hover { color: var(--text); background: var(--surface2); }
+  .topbar-tab.active { color: var(--text); background: var(--surface2); font-weight: 500; }
+  .topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .filter-tag {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+    background: none;
+    font-family: 'DM Sans';
+  }
+  .filter-tag:hover, .filter-tag.active { border-color: var(--accent); color: var(--accent); }
+
+  /* CONTENT */
+  .content { padding: 28px 32px; }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+  .section-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card-header {
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .card-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .card-title-wrap { flex: 1; }
+  .card-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+  .card-cat {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .cat-ds { background: rgba(167,139,250,0.12); color: var(--accent); }
+  .cat-algo { background: rgba(52,211,153,0.12); color: var(--accent2); }
+  .cat-pattern { background: rgba(251,146,60,0.12); color: var(--accent3); }
+  .cat-custom { background: rgba(96,165,250,0.12); color: var(--accent4); }
+  .card-actions { display: flex; gap: 4px; }
+  .card-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .card-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .card-body { padding: 14px 18px 16px; }
+  .card-desc { font-size: 13px; color: var(--muted); margin-bottom: 10px; line-height: 1.6; }
+  .card-complexity { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .cx-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--code-bg);
+    color: var(--accent2);
+    border: 1px solid var(--border);
+  }
+  .card-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--tag-bg);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .card-steps {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .step-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .step-num {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #a0a0c0;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.7;
+  }
+  .kw { color: #c084fc; }
+  .fn { color: #60a5fa; }
+  .cm { color: #4b5563; }
+  .st { color: #34d399; }
+  .num { color: #fb923c; }
+
+  /* DETAIL PANEL */
+  .detail-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .detail-overlay.open { display: flex; }
+  .detail-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    width: min(720px, 95vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px 32px;
+    position: relative;
+  }
+  .detail-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .detail-close:hover { color: var(--text); border-color: var(--accent); }
+  .detail-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .detail-desc { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.7; }
+  .detail-section { margin-bottom: 20px; }
+  .detail-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 10px; }
+  .use-cases { display: flex; flex-wrap: wrap; gap: 6px; }
+  .use-case {
+    padding: 5px 12px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  /* ADD MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    width: min(560px, 95vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px 28px;
+  }
+  .modal h2 { font-family: 'Fraunces', serif; font-size: 22px; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.8px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'DM Sans';
+    outline: none;
+    transition: border-color .2s;
+  }
+  .form-textarea { font-family: 'JetBrains Mono', monospace; font-size: 12px; resize: vertical; min-height: 80px; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-select option { background: var(--surface2); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .btn-cancel {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'DM Sans';
+    transition: all .15s;
+  }
+  .btn-cancel:hover { color: var(--text); border-color: var(--text); }
+  .btn-save {
+    padding: 8px 22px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: #0f0f11;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans';
+    transition: opacity .15s;
+  }
+  .btn-save:hover { opacity: 0.85; }
+
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty p { font-size: 14px; }
+
+  /* BOOKMARKS */
+  .bookmark-btn { font-size: 16px; cursor: pointer; background: none; border: none; color: var(--muted); transition: color .15s; }
+  .bookmark-btn.bookmarked { color: #fbbf24; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 500;
+    display: none;
+    animation: fadeUp .3s ease;
+  }
+  .toast.show { display: block; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+  .hidden { display: none !important; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      DSA Ref
+      <span>Your Personal Cheatsheet</span>
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="globalSearch" placeholder="Search anything..." oninput="doSearch(this.value)">
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Browse</div>
+      <div class="sidebar-link active" onclick="switchView('all', this)"><span class="dot"></span>All Topics</div>
+      <div class="sidebar-link" onclick="switchView('bookmarks', this)"><span class="dot"></span>⭐ Bookmarked</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Categories</div>
+      <div class="sidebar-link" onclick="filterCat('Data Structure', this)"><span class="dot"></span>Data Structures</div>
+      <div class="sidebar-link" onclick="filterCat('Algorithm', this)"><span class="dot"></span>Algorithms</div>
+      <div class="sidebar-link" onclick="filterCat('Pattern', this)"><span class="dot"></span>Patterns</div>
+      <div class="sidebar-link" onclick="filterCat('Custom', this)"><span class="dot"></span>My Notes</div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="add-btn" onclick="openAddModal()">+ Add New Topic</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-tabs">
+        <button class="topbar-tab active" onclick="setLayout('grid',this)">⊞ Grid</button>
+        <button class="topbar-tab" onclick="setLayout('compact',this)">☰ Compact</button>
+      </div>
+      <div class="topbar-right">
+        <button class="filter-tag" onclick="toggleDiff('Easy',this)">Easy</button>
+        <button class="filter-tag" onclick="toggleDiff('Medium',this)">Medium</button>
+        <button class="filter-tag" onclick="toggleDiff('Hard',this)">Hard</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="viewTitle">
+        <div class="section-title" id="mainTitle">All Topics</div>
+        <div class="section-subtitle" id="mainSub">Browse all data structures, algorithms and patterns</div>
+      </div>
+      <div class="cards-grid" id="cardsGrid"></div>
+      <div class="empty hidden" id="emptyState">
+        <div class="empty-icon">🔍</div>
+        <p>Nothing found. Try a different search or add a new topic.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="detail-panel" id="detailPanel">
+    <button class="detail-close" onclick="closeDetailPanel()">×</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <h2 id="modalTitle">Add New Topic</h2>
+    <div class="form-group">
+      <label class="form-label">Title</label>
+      <input class="form-input" id="fTitle" placeholder="e.g. Binary Search">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select class="form-select" id="fCat">
+        <option value="Data Structure">Data Structure</option>
+        <option value="Algorithm">Algorithm</option>
+        <option value="Pattern">Pattern</option>
+        <option value="Custom">Custom Note</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Difficulty</label>
+      <select class="form-select" id="fDiff">
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Short Description</label>
+      <input class="form-input" id="fDesc" placeholder="One-line summary">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Full Explanation</label>
+      <textarea class="form-textarea" id="fExplain" rows="4" placeholder="Detailed explanation..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Time Complexity (comma separated)</label>
+      <input class="form-input" id="fTime" placeholder="O(1), O(log n), O(n)">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Space Complexity</label>
+      <input class="form-input" id="fSpace" placeholder="O(n)">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Steps / Key Points (one per line)</label>
+      <textarea class="form-textarea" id="fSteps" rows="4" placeholder="Step 1&#10;Step 2&#10;Step 3"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Use Cases (comma separated)</label>
+      <input class="form-input" id="fUseCases" placeholder="Binary search, Sorted arrays, Two pointers">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Code Snippet (optional)</label>
+      <textarea class="form-textarea" id="fCode" rows="5" placeholder="def binary_search(arr, target):&#10;    ..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags (comma separated)</label>
+      <input class="form-input" id="fTags" placeholder="array, search, divide-conquer">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModalBtn()">Cancel</button>
+      <button class="btn-save" onclick="saveTopic()">Save Topic</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const DEFAULT_DATA = [
+  {
+    id: 1, title: "Array", category: "Data Structure", difficulty: "Easy",
+    icon: "📦", desc: "Contiguous memory storing elements of the same type, accessible by index.",
+    explain: "Arrays are the most fundamental data structure. They store elements in a contiguous block of memory, allowing O(1) access by index. Fixed-size in most languages, but dynamic arrays (like Python lists, Java ArrayList) resize automatically. Prefix sum technique is a powerful pattern built on arrays.",
+    time: ["O(1) access", "O(n) search", "O(n) insert/delete mid"],
+    space: "O(n)",
+    steps: ["Declare with fixed size or use dynamic array", "Access elements by index (0-based)", "Use prefix sums for range query optimization", "Two pointers for sorted array problems"],
+    useCases: ["Two pointers", "Sliding window", "Prefix sums", "Kadane's algorithm", "Matrix problems"],
+    code: `# Prefix Sum
+prefix = [0] * (len(arr) + 1)
+for i in range(len(arr)):
+    prefix[i+1] = prefix[i] + arr[i]
+
+# Range sum query in O(1)
+range_sum = prefix[r+1] - prefix[l]`,
+    tags: ["linear", "random-access", "contiguous"]
+  },
+  {
+    id: 2, title: "HashMap / HashSet", category: "Data Structure", difficulty: "Easy",
+    icon: "🗂", desc: "Key-value store with O(1) average lookup, insert, and delete.",
+    explain: "Hash maps use a hash function to map keys to indices. Collisions are handled via chaining or open addressing. HashSet is a hashmap without values — just for membership checks. Both are essential for frequency counting, caching, and eliminating O(n²) solutions down to O(n).",
+    time: ["O(1) avg insert", "O(1) avg lookup", "O(n) worst case"],
+    space: "O(n)",
+    steps: ["Use dict{} in Python or HashMap in Java", "For frequency count: map[key] = map.get(key,0)+1", "For two-sum: store complement and check existence", "For deduplication: use a set"],
+    useCases: ["Two Sum", "Anagram check", "Frequency count", "Memoization", "Deduplication"],
+    code: `# Two Sum in O(n)
+def two_sum(nums, target):
+    seen = {}
+    for i, n in enumerate(nums):
+        if target - n in seen:
+            return [seen[target-n], i]
+        seen[n] = i`,
+    tags: ["hash", "O(1)", "key-value"]
+  },
+  {
+    id: 3, title: "Stack", category: "Data Structure", difficulty: "Easy",
+    icon: "📚", desc: "LIFO structure — last in, first out. Push and pop from the same end.",
+    explain: "Stacks are perfect for problems involving 'undo', matching pairs, or tracking state that needs to be reversed. In Python, a list works as a stack (append/pop). Monotonic stacks keep the stack in increasing or decreasing order and solve many 'next greater/smaller' problems.",
+    time: ["O(1) push", "O(1) pop", "O(1) peek"],
+    space: "O(n)",
+    steps: ["Use list in Python: stack = []", "push: stack.append(x)", "pop: stack.pop()", "peek: stack[-1]"],
+    useCases: ["Balanced parentheses", "Next greater element", "Monotonic stack", "DFS iterative", "Undo operations"],
+    code: `# Valid Parentheses
+def is_valid(s):
+    stack, match = [], {')':'(',']':'[','}':'{'}
+    for c in s:
+        if c in match:
+            if not stack or stack[-1] != match[c]:
+                return False
+            stack.pop()
+        else:
+            stack.append(c)
+    return not stack`,
+    tags: ["LIFO", "monotonic", "DFS"]
+  },
+  {
+    id: 4, title: "Queue / Deque", category: "Data Structure", difficulty: "Easy",
+    icon: "🔄", desc: "FIFO structure — first in, first out. Deque allows both-end operations.",
+    explain: "Queues are the backbone of BFS. In Python, use collections.deque for O(1) operations on both ends. A deque (double-ended queue) is more versatile and used for sliding window max/min problems. A plain list as a queue has O(n) popleft — always use deque.",
+    time: ["O(1) enqueue", "O(1) dequeue (deque)", "O(n) dequeue (list!)"],
+    space: "O(n)",
+    steps: ["from collections import deque", "q = deque()", "Enqueue: q.append(x)", "Dequeue: q.popleft()", "Deque left: q.appendleft(x), q.popleft()"],
+    useCases: ["BFS", "Level-order traversal", "Sliding window max", "Task scheduling", "Rotten oranges"],
+    code: `from collections import deque
+# BFS template
+def bfs(graph, start):
+    visited, q = {start}, deque([start])
+    while q:
+        node = q.popleft()
+        for nei in graph[node]:
+            if nei not in visited:
+                visited.add(nei)
+                q.append(nei)`,
+    tags: ["FIFO", "BFS", "deque", "sliding-window"]
+  },
+  {
+    id: 5, title: "Linked List", category: "Data Structure", difficulty: "Medium",
+    icon: "🔗", desc: "Nodes linked by pointers. O(1) insert/delete at known position, O(n) access.",
+    explain: "Singly linked lists have next pointers; doubly linked lists also have prev. The most common linked list patterns are two pointers (slow/fast), reversing, and merging. Linked lists underpin LRU Cache (doubly linked list + hashmap). Dummy head nodes simplify edge cases.",
+    time: ["O(n) access", "O(1) insert given node", "O(n) search"],
+    space: "O(n)",
+    steps: ["Always handle edge cases: empty list, single node", "Use dummy head to simplify insert/delete", "Slow+fast pointer for cycle detection & midpoint", "Reverse: prev, curr, next pointer manipulation"],
+    useCases: ["LRU Cache", "Cycle detection", "Merge sorted lists", "Reverse linked list", "Find middle"],
+    code: `# Reverse Linked List
+def reverse_list(head):
+    prev = None
+    curr = head
+    while curr:
+        nxt = curr.next
+        curr.next = prev
+        prev = curr
+        curr = nxt
+    return prev`,
+    tags: ["pointers", "dummy-head", "slow-fast"]
+  },
+  {
+    id: 6, title: "Binary Tree / BST", category: "Data Structure", difficulty: "Medium",
+    icon: "🌳", desc: "Hierarchical node structure. BST: left < node < right for O(h) operations.",
+    explain: "Binary trees come up in almost every interview. Know all three DFS traversals (inorder, preorder, postorder) both recursively and iteratively. BST inorder traversal gives sorted order. Tree problems often have elegant recursive solutions — the function itself acts as the DFS. Height-balanced BSTs (AVL, Red-Black) guarantee O(log n).",
+    time: ["BST search O(h)", "h = O(log n) balanced", "h = O(n) skewed"],
+    space: "O(h) recursion stack",
+    steps: ["Inorder (L-Root-R): gives sorted for BST", "Preorder (Root-L-R): for tree serialization", "Postorder (L-R-Root): for deletion, size calc", "BFS with deque for level-order"],
+    useCases: ["Level-order traversal", "Lowest common ancestor", "Validate BST", "Diameter of tree", "Serialize/deserialize"],
+    code: `# Inorder traversal (recursive)
+def inorder(root):
+    if not root: return []
+    return inorder(root.left) + [root.val] + inorder(root.right)
+
+# Max depth
+def max_depth(root):
+    if not root: return 0
+    return 1 + max(max_depth(root.left), max_depth(root.right))`,
+    tags: ["recursive", "DFS", "BFS", "BST"]
+  },
+  {
+    id: 7, title: "Heap (Priority Queue)", category: "Data Structure", difficulty: "Medium",
+    icon: "⛰", desc: "Complete binary tree: min-heap gives O(1) access to minimum, O(log n) push/pop.",
+    explain: "Python's heapq is a min-heap by default. For max-heap, negate values. Heaps are the go-to for 'top K' or 'K-th smallest/largest' problems. Running median uses two heaps (max-heap for lower half, min-heap for upper half). Dijkstra's algorithm uses a min-heap for the priority queue.",
+    time: ["O(1) peek min", "O(log n) push", "O(log n) pop", "O(n) heapify"],
+    space: "O(n)",
+    steps: ["import heapq", "heapq.heappush(h, val)", "heapq.heappop(h) returns min", "For max-heap: push -val, negate on pop", "heapq.nlargest(k, arr) / nsmallest(k, arr)"],
+    useCases: ["Top K elements", "Kth largest", "Merge K sorted lists", "Dijkstra", "Running median"],
+    code: `import heapq
+# K largest elements
+def k_largest(nums, k):
+    return heapq.nlargest(k, nums)
+
+# Kth smallest with min-heap
+def kth_smallest(matrix, k):
+    h = [(matrix[0][0], 0, 0)]
+    # ... push neighbors, pop k times`,
+    tags: ["min-heap", "max-heap", "greedy", "priority"]
+  },
+  {
+    id: 8, title: "Trie (Prefix Tree)", category: "Data Structure", difficulty: "Hard",
+    icon: "🌐", desc: "Tree where each node represents a character. O(m) insert and search for word of length m.",
+    explain: "Tries excel at prefix-based problems. Each node has up to 26 children (for lowercase letters) and an is_end flag. Tries beat hashmaps when you need to search by prefix. Used heavily in autocomplete, spell-checkers, and IP routing tables. Space is O(ALPHABET_SIZE × N × M).",
+    time: ["O(m) insert", "O(m) search", "O(m) prefix check"],
+    space: "O(total characters)",
+    steps: ["Create TrieNode with children={} and is_end=False", "Insert: traverse/create nodes for each char", "Search: traverse nodes, check is_end at last char", "StartsWith: same as search but don't check is_end"],
+    useCases: ["Autocomplete", "Word search II", "Replace words", "Search suggestions", "Prefix matching"],
+    code: `class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Trie:
+    def __init__(self): self.root = TrieNode()
+    def insert(self, word):
+        node = self.root
+        for c in word:
+            if c not in node.children:
+                node.children[c] = TrieNode()
+            node = node.children[c]
+        node.is_end = True`,
+    tags: ["prefix", "autocomplete", "string"]
+  },
+  {
+    id: 9, title: "Union-Find (DSU)", category: "Data Structure", difficulty: "Medium",
+    icon: "🔀", desc: "Tracks connected components. Near O(1) union and find with path compression + union by rank.",
+    explain: "Disjoint Set Union is perfect for detecting cycles, finding connected components, and Kruskal's MST. Path compression (point nodes directly to root) and union by rank (always attach smaller tree under larger) together give nearly O(1) amortized operations — technically O(α(n)), the inverse Ackermann function.",
+    time: ["O(α(n)) ≈ O(1) find", "O(α(n)) ≈ O(1) union"],
+    space: "O(n)",
+    steps: ["Initialize parent[i]=i and rank[i]=0", "Find: recursively find root, compress path", "Union: find roots, attach by rank", "Connected: return find(a)==find(b)"],
+    useCases: ["Number of islands", "Redundant connection", "Accounts merge", "Kruskal's MST", "Friend circles"],
+    code: `class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    def union(self, x, y):
+        px, py = self.find(x), self.find(y)
+        if px == py: return False
+        if self.rank[px] < self.rank[py]: px, py = py, px
+        self.parent[py] = px
+        if self.rank[px] == self.rank[py]: self.rank[px] += 1
+        return True`,
+    tags: ["graph", "connected-components", "MST"]
+  },
+  // ALGORITHMS
+  {
+    id: 10, title: "Binary Search", category: "Algorithm", difficulty: "Easy",
+    icon: "🔎", desc: "Halve the search space each step. O(log n) on sorted data or monotonic functions.",
+    explain: "Binary search goes beyond searching sorted arrays — it works on any monotonic function. 'Search space binary search' means defining a predicate and finding the boundary. Key trick: mid = lo + (hi-lo)//2 to avoid overflow. Know the 3 templates: find exact value, find left boundary, find right boundary.",
+    time: ["O(log n) search"],
+    space: "O(1) iterative, O(log n) recursive",
+    steps: ["lo=0, hi=n-1 (or lo=MIN, hi=MAX for search space)", "mid = lo + (hi - lo) // 2", "If target < arr[mid]: hi = mid-1", "If target > arr[mid]: lo = mid+1", "Loop: while lo <= hi"],
+    useCases: ["Search in rotated array", "Find peak element", "Koko eating bananas", "Min in rotated array", "Sqrt(x)"],
+    code: `def binary_search(arr, target):
+    lo, hi = 0, len(arr) - 1
+    while lo <= hi:
+        mid = lo + (hi - lo) // 2
+        if arr[mid] == target: return mid
+        elif arr[mid] < target: lo = mid + 1
+        else: hi = mid - 1
+    return -1`,
+    tags: ["divide-conquer", "sorted", "log-n"]
+  },
+  {
+    id: 11, title: "BFS (Breadth-First Search)", category: "Algorithm", difficulty: "Easy",
+    icon: "🌊", desc: "Explore level by level using a queue. Guarantees shortest path in unweighted graphs.",
+    explain: "BFS processes all neighbors at distance d before any at distance d+1, making it optimal for shortest path in unweighted graphs. Always use a visited set to prevent cycles. Multi-source BFS starts from multiple nodes simultaneously (e.g., all 0s in a matrix). BFS can also solve 'minimum steps' problems by counting levels.",
+    time: ["O(V+E) for graphs", "O(m×n) for grids"],
+    space: "O(V) for the queue",
+    steps: ["Initialize queue with start node(s)", "Mark start as visited", "While queue: pop, process, push unvisited neighbors", "Track level/distance if needed (process full level each iteration)", "Mark visited BEFORE pushing to queue"],
+    useCases: ["Shortest path", "Word ladder", "Rotten oranges", "0-1 matrix", "Walls and gates"],
+    code: `from collections import deque
+def bfs(grid, start):
+    rows, cols = len(grid), len(grid[0])
+    q = deque([start])
+    visited = {start}
+    dist = 0
+    while q:
+        for _ in range(len(q)):  # process level
+            r, c = q.popleft()
+            for dr, dc in [(0,1),(0,-1),(1,0),(-1,0)]:
+                nr, nc = r+dr, c+dc
+                if 0<=nr<rows and 0<=nc<cols and (nr,nc) not in visited:
+                    visited.add((nr,nc))
+                    q.append((nr,nc))
+        dist += 1
+    return dist`,
+    tags: ["graph", "grid", "shortest-path", "unweighted"]
+  },
+  {
+    id: 12, title: "DFS (Depth-First Search)", category: "Algorithm", difficulty: "Easy",
+    icon: "🌀", desc: "Explore as deep as possible before backtracking. Works recursively or with an explicit stack.",
+    explain: "DFS is the workhorse for tree/graph problems and backtracking. The recursive call stack implicitly acts as a stack. For graphs, always track visited nodes. DFS can compute connected components, detect cycles, find paths, and with backtracking, generate all combinations/permutations.",
+    time: ["O(V+E) graphs", "O(2^n) backtracking worst case"],
+    space: "O(h) recursion depth",
+    steps: ["Mark current node visited", "Recurse on each unvisited neighbor", "Undo visit mark (for backtracking problems)", "Base case: return when leaf or condition met"],
+    useCases: ["Number of islands", "Clone graph", "Path sum", "All paths", "Cycle detection"],
+    code: `# DFS on grid (islands)
+def num_islands(grid):
+    count = 0
+    def dfs(r, c):
+        if r<0 or c<0 or r>=len(grid) or c>=len(grid[0]) or grid[r][c]!='1':
+            return
+        grid[r][c] = '0'  # mark visited
+        for dr,dc in [(0,1),(0,-1),(1,0),(-1,0)]:
+            dfs(r+dr, c+dc)
+    for r in range(len(grid)):
+        for c in range(len(grid[0])):
+            if grid[r][c] == '1':
+                dfs(r, c); count += 1
+    return count`,
+    tags: ["graph", "tree", "recursive", "backtracking"]
+  },
+  {
+    id: 13, title: "Dynamic Programming", category: "Algorithm", difficulty: "Hard",
+    icon: "🧩", desc: "Solve overlapping subproblems once, store results. Bottom-up table or top-down memoization.",
+    explain: "DP applies when a problem has overlapping subproblems and optimal substructure. Start by defining the STATE (what dp[i] means), then write the RECURRENCE (dp[i] in terms of smaller states), then handle BASE CASES. Bottom-up (tabulation) fills a table iteratively. Top-down (memoization) adds a cache to recursion. Space can often be reduced with rolling arrays.",
+    time: ["Varies: O(n), O(n²), O(n·m), O(n·2^n)"],
+    space: "O(n) to O(n²), often reducible",
+    steps: ["Identify if greedy fails → think DP", "Define state: dp[i] = 'best answer for input up to i'", "Write recurrence relation", "Set base cases (dp[0], dp[1], empty)", "Fill table (bottom-up) or add @cache to recursion"],
+    useCases: ["Coin change", "Knapsack", "LCS", "LIS", "Edit distance", "House robber", "Unique paths"],
+    code: `# Coin Change (bottom-up)
+def coin_change(coins, amount):
+    dp = [float('inf')] * (amount + 1)
+    dp[0] = 0
+    for a in range(1, amount + 1):
+        for c in coins:
+            if c <= a:
+                dp[a] = min(dp[a], 1 + dp[a - c])
+    return dp[amount] if dp[amount] != float('inf') else -1`,
+    tags: ["memoization", "tabulation", "optimal-substructure"]
+  },
+  {
+    id: 14, title: "Merge Sort", category: "Algorithm", difficulty: "Medium",
+    icon: "🔀", desc: "Divide array in half recursively, then merge sorted halves. Stable, O(n log n) guaranteed.",
+    explain: "Merge sort is a classic divide-and-conquer algorithm. Split array into two halves, recursively sort each, then merge in O(n) time. It's stable (preserves relative order of equal elements) and guarantees O(n log n) unlike quicksort. Used for sorting linked lists and external sort. The merge step is also useful alone (counting inversions).",
+    time: ["O(n log n) all cases"],
+    space: "O(n) auxiliary",
+    steps: ["Split array at midpoint", "Recursively sort left half", "Recursively sort right half", "Merge two sorted halves in O(n)", "Base case: single element is sorted"],
+    useCases: ["Stable sort needed", "Sort linked list", "Count inversions", "External sort", "Divide-and-conquer problems"],
+    code: `def merge_sort(arr):
+    if len(arr) <= 1: return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right)
+
+def merge(l, r):
+    res, i, j = [], 0, 0
+    while i < len(l) and j < len(r):
+        if l[i] <= r[j]: res.append(l[i]); i+=1
+        else: res.append(r[j]); j+=1
+    return res + l[i:] + r[j:]`,
+    tags: ["divide-conquer", "stable", "O(n log n)"]
+  },
+  // PATTERNS
+  {
+    id: 15, title: "Two Pointers", category: "Pattern", difficulty: "Easy",
+    icon: "👇", desc: "Two indices moving toward each other or in the same direction to reduce O(n²) to O(n).",
+    explain: "Two pointers eliminate the inner loop of naive O(n²) solutions. Opposite ends: start lo=0, hi=n-1, move based on comparison. Same direction: slow and fast pointers for cycle detection or removing duplicates. Always ask: is the array sorted? Can I move a pointer deterministically?",
+    time: ["O(n) typically"],
+    space: "O(1)",
+    steps: ["Sort array if needed", "Place lo=0, hi=n-1 (or both at 0)", "Compare or compute at (lo, hi)", "Move lo right if answer too small, hi left if too big", "Stop when lo >= hi"],
+    useCases: ["Two sum (sorted)", "3Sum", "Container with most water", "Trapping rain water", "Remove duplicates"],
+    code: `# Two Sum II (sorted array)
+def two_sum(numbers, target):
+    lo, hi = 0, len(numbers) - 1
+    while lo < hi:
+        s = numbers[lo] + numbers[hi]
+        if s == target: return [lo+1, hi+1]
+        elif s < target: lo += 1
+        else: hi -= 1`,
+    tags: ["array", "sorted", "O(n)", "in-place"]
+  },
+  {
+    id: 16, title: "Sliding Window", category: "Pattern", difficulty: "Easy",
+    icon: "🪟", desc: "Dynamic window over contiguous subarray. Expand right, shrink left when condition violated.",
+    explain: "Sliding window converts O(n²) or O(n³) brute force to O(n). Key insight: instead of re-computing the window from scratch, update incrementally. Fixed-size window: add new element, remove old. Variable-size window: expand right until condition breaks, then shrink from left. Track window state (sum, count, frequency map).",
+    time: ["O(n) — each element added/removed once"],
+    space: "O(k) for window state",
+    steps: ["Initialize left=0, right=0, window_state", "Expand: move right, add nums[right] to window", "While window invalid: move left, remove nums[left]", "Update answer at each step (or only when window is valid)", "Return best answer found"],
+    useCases: ["Longest substring without repeats", "Min window substring", "Max sum subarray of size k", "Fruit into baskets", "Permutation in string"],
+    code: `# Longest substring without repeating chars
+def length_of_longest(s):
+    char_set, left, res = set(), 0, 0
+    for right in range(len(s)):
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+        char_set.add(s[right])
+        res = max(res, right - left + 1)
+    return res`,
+    tags: ["substring", "subarray", "O(n)", "variable-window"]
+  },
+  {
+    id: 17, title: "Fast & Slow Pointers", category: "Pattern", difficulty: "Easy",
+    icon: "🐇", desc: "Slow moves 1 step, fast moves 2. If they meet, there's a cycle.",
+    explain: "Floyd's cycle detection algorithm. If a cycle exists, fast and slow will eventually meet inside it. To find the cycle start: reset one pointer to head, advance both 1 step — they meet at the start. Also used to find the middle of a linked list (when fast reaches end, slow is at middle). Works on any sequence where you can jump ahead.",
+    time: ["O(n)"],
+    space: "O(1)",
+    steps: ["Initialize slow=head, fast=head", "Advance: slow=slow.next, fast=fast.next.next", "If fast==slow → cycle exists", "To find cycle start: reset slow to head, move both 1 step", "Middle of list: when fast reaches end, slow is at mid"],
+    useCases: ["Linked list cycle", "Find cycle start", "Middle of linked list", "Happy number", "Palindrome linked list"],
+    code: `def has_cycle(head):
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            return True
+    return False
+
+def find_cycle_start(head):
+    slow = fast = head
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+        if slow == fast:
+            slow = head
+            while slow != fast:
+                slow, fast = slow.next, fast.next
+            return slow`,
+    tags: ["linked-list", "cycle", "Floyd", "O(1)-space"]
+  },
+  {
+    id: 18, title: "Backtracking", category: "Pattern", difficulty: "Medium",
+    icon: "↩", desc: "Make a choice, recurse, undo the choice. Explore all possibilities systematically.",
+    explain: "Backtracking is DFS + undoing choices. You build a candidate solution incrementally and abandon it ('prune') as soon as you determine it cannot lead to a valid solution. The key template: choose → explore → unchoose. Pruning is essential for performance. Most backtracking problems ask for all combinations, permutations, or subsets.",
+    time: ["O(2^n) subsets", "O(n!) permutations", "Pruning reduces constant factor"],
+    space: "O(n) recursion depth",
+    steps: ["Define base case (result complete → add to answers)", "Loop through choices at current position", "Make choice (add to path)", "Recurse to next position", "Undo choice (remove from path)"],
+    useCases: ["Subsets", "Permutations", "Combinations", "N-Queens", "Sudoku solver", "Word search"],
+    code: `# Subsets
+def subsets(nums):
+    res, path = [], []
+    def bt(start):
+        res.append(path[:])
+        for i in range(start, len(nums)):
+            path.append(nums[i])
+            bt(i + 1)
+            path.pop()
+    bt(0)
+    return res`,
+    tags: ["recursion", "pruning", "combinations", "permutations"]
+  },
+  {
+    id: 19, title: "Monotonic Stack", category: "Pattern", difficulty: "Medium",
+    icon: "📈", desc: "Stack maintained in increasing or decreasing order. O(n) solution for next greater/smaller element.",
+    explain: "A monotonic stack is a stack where elements are always in sorted order (increasing or decreasing). When a new element breaks the order, pop elements until order is restored — those popped elements have found their 'next greater/smaller' neighbor. Each element is pushed and popped at most once → O(n). Think: 'What does the current element answer for previous elements?'",
+    time: ["O(n) — each element pushed/popped once"],
+    space: "O(n)",
+    steps: ["Initialize empty stack", "For each element, while stack not empty AND current breaks monotonic property:", "Pop from stack — current element IS the answer for the popped element", "Push current element", "Elements remaining in stack have no answer (use 0 or -1)"],
+    useCases: ["Next greater element", "Daily temperatures", "Largest rectangle in histogram", "Trapping rain water", "Stock span problem"],
+    code: `# Daily Temperatures
+def daily_temperatures(temps):
+    res = [0] * len(temps)
+    stack = []  # stores indices
+    for i, t in enumerate(temps):
+        while stack and temps[stack[-1]] < t:
+            j = stack.pop()
+            res[j] = i - j
+        stack.append(i)
+    return res`,
+    tags: ["stack", "O(n)", "next-greater", "histogram"]
+  },
+  {
+    id: 20, title: "Topological Sort", category: "Pattern", difficulty: "Medium",
+    icon: "📋", desc: "Order nodes in a DAG respecting all dependencies. Kahn's (BFS) or DFS post-order.",
+    explain: "Topological sort orders nodes in a directed acyclic graph such that for every edge u→v, u appears before v. Kahn's algorithm: count in-degrees, repeatedly process nodes with in-degree 0. If processed count < total nodes, a cycle exists. DFS approach: recursively visit, add to result in post-order, then reverse. Detect cycles if a node is visited twice on same DFS path.",
+    time: ["O(V+E)"],
+    space: "O(V+E)",
+    steps: ["Build adjacency list and in-degree map", "Push all nodes with in-degree=0 to queue", "BFS: pop node, add to result, decrement in-degree of neighbors", "Push neighbors whose in-degree becomes 0", "If len(result) < n: cycle detected"],
+    useCases: ["Course schedule", "Build system order", "Alien dictionary", "Task dependencies", "Find if DAG has valid ordering"],
+    code: `from collections import deque
+def topo_sort(n, prerequisites):
+    adj = [[] for _ in range(n)]
+    indegree = [0] * n
+    for a, b in prerequisites:
+        adj[b].append(a); indegree[a] += 1
+    q = deque(i for i in range(n) if indegree[i]==0)
+    order = []
+    while q:
+        node = q.popleft(); order.append(node)
+        for nei in adj[node]:
+            indegree[nei] -= 1
+            if indegree[nei] == 0: q.append(nei)
+    return order if len(order)==n else []`,
+    tags: ["graph", "DAG", "Kahn", "dependencies"]
+  }
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let topics = [];
+let bookmarks = new Set();
+let currentView = 'all';
+let currentCat = null;
+let currentDiffs = new Set();
+let searchQuery = '';
+let editingId = null;
+let layoutMode = 'grid';
+
+function loadData() {
+  const stored = localStorage.getItem('dsa_topics');
+  topics = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+  const bk = localStorage.getItem('dsa_bookmarks');
+  bookmarks = bk ? new Set(JSON.parse(bk)) : new Set();
+}
+function saveData() {
+  localStorage.setItem('dsa_topics', JSON.stringify(topics));
+  localStorage.setItem('dsa_bookmarks', JSON.stringify([...bookmarks]));
+}
+
+// ─── FILTERING ────────────────────────────────────────────────────────────────
+function getFiltered() {
+  return topics.filter(t => {
+    if (currentView === 'bookmarks' && !bookmarks.has(t.id)) return false;
+    if (currentCat && t.category !== currentCat) return false;
+    if (currentDiffs.size > 0 && !currentDiffs.has(t.difficulty)) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      return t.title.toLowerCase().includes(q) ||
+        t.desc.toLowerCase().includes(q) ||
+        (t.tags || []).some(tag => tag.toLowerCase().includes(q)) ||
+        t.category.toLowerCase().includes(q);
+    }
+    return true;
+  });
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+const catColors = { 'Data Structure': 'cat-ds', 'Algorithm': 'cat-algo', 'Pattern': 'cat-pattern', 'Custom': 'cat-custom' };
+const diffColors = { 'Easy': '#34d399', 'Medium': '#fb923c', 'Hard': '#f87171' };
+
+function renderCards() {
+  const filtered = getFiltered();
+  const grid = document.getElementById('cardsGrid');
+  const empty = document.getElementById('emptyState');
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+
+  if (layoutMode === 'compact') {
+    grid.style.gridTemplateColumns = '1fr';
+  } else {
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
+  }
+
+  grid.innerHTML = filtered.map(t => {
+    const isBookmarked = bookmarks.has(t.id);
+    const steps = (t.steps || []).slice(0,3).map((s,i) =>
+      `<div class="step-item"><div class="step-num">${i+1}</div><div>${s}</div></div>`
+    ).join('');
+    const tags = (t.tags||[]).slice(0,4).map(tag => `<span class="tag">${tag}</span>`).join('');
+    const cxBadges = (t.time||[]).slice(0,2).map(c => `<span class="cx-badge">${c}</span>`).join('');
+
+    return `
+    <div class="card" onclick="openDetail(${t.id})">
+      <div class="card-header">
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div class="card-icon" style="background:var(--surface2)">${t.icon||'📄'}</div>
+          <div class="card-title-wrap">
+            <div class="card-title">${t.title}</div>
+            <span class="card-cat ${catColors[t.category]||'cat-custom'}">${t.category}</span>
+          </div>
+        </div>
+        <div class="card-actions" onclick="event.stopPropagation()">
+          <button class="bookmark-btn ${isBookmarked?'bookmarked':''}" onclick="toggleBookmark(${t.id},this)" title="Bookmark">⭐</button>
+          <button class="card-btn" onclick="openEditModal(${t.id})" title="Edit">✏️</button>
+          <button class="card-btn" onclick="deleteTopic(${t.id})" title="Delete">🗑</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-desc">${t.desc}</div>
+        <div class="card-complexity">${cxBadges}</div>
+        <div class="card-steps">${steps}</div>
+        <div class="card-tags" style="margin-top:10px">${tags}
+          <span style="font-size:11px;padding:2px 8px;border-radius:20px;color:${diffColors[t.difficulty]};border:1px solid ${diffColors[t.difficulty]}33;margin-left:auto">${t.difficulty}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── DETAIL ───────────────────────────────────────────────────────────────────
+function openDetail(id) {
+  const t = topics.find(x => x.id === id);
+  if (!t) return;
+  const steps = (t.steps||[]).map((s,i) =>
+    `<div class="step-item"><div class="step-num">${i+1}</div><div>${s}</div></div>`
+  ).join('');
+  const useCases = (t.useCases||[]).map(u => `<div class="use-case">${u}</div>`).join('');
+  const cxBadges = (t.time||[]).map(c => `<span class="cx-badge">${c}</span>`).join('');
+  const spBadge = t.space ? `<span class="cx-badge" style="color:var(--accent3)">Space: ${t.space}</span>` : '';
+  const tags = (t.tags||[]).map(tag => `<span class="tag">${tag}</span>`).join('');
+  const codeHtml = t.code ? `
+    <div class="detail-section">
+      <h3>Code Example</h3>
+      <div class="code-block">${escapeHtml(t.code)}</div>
+    </div>` : '';
+
+  document.getElementById('detailContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="font-size:36px">${t.icon||'📄'}</div>
+      <div>
+        <div class="detail-title">${t.title}</div>
+        <span class="card-cat ${catColors[t.category]||'cat-custom'}" style="font-size:12px">${t.category}</span>
+        <span style="margin-left:8px;font-size:12px;color:${diffColors[t.difficulty]}">${t.difficulty}</span>
+      </div>
+    </div>
+    <div class="detail-desc">${t.explain || t.desc}</div>
+    <div class="detail-section">
+      <h3>Complexity</h3>
+      <div class="card-complexity">${cxBadges}${spBadge}</div>
+    </div>
+    <div class="detail-section">
+      <h3>Steps / Key Points</h3>
+      <div class="card-steps">${steps}</div>
+    </div>
+    ${useCases ? `<div class="detail-section"><h3>Use Cases</h3><div class="use-cases">${useCases}</div></div>` : ''}
+    ${codeHtml}
+    <div class="detail-section"><h3>Tags</h3><div class="card-tags">${tags}</div></div>
+  `;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function closeDetail(e) {
+  if (e.target === document.getElementById('detailOverlay')) closeDetailPanel();
+}
+function closeDetailPanel() {
+  document.getElementById('detailOverlay').classList.remove('open');
+}
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Add New Topic';
+  ['fTitle','fDesc','fExplain','fTime','fSpace','fSteps','fUseCases','fCode','fTags'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fCat').value = 'Data Structure';
+  document.getElementById('fDiff').value = 'Easy';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function openEditModal(id) {
+  const t = topics.find(x => x.id === id);
+  if (!t) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Topic';
+  document.getElementById('fTitle').value = t.title;
+  document.getElementById('fCat').value = t.category;
+  document.getElementById('fDiff').value = t.difficulty;
+  document.getElementById('fDesc').value = t.desc;
+  document.getElementById('fExplain').value = t.explain || '';
+  document.getElementById('fTime').value = (t.time||[]).join(', ');
+  document.getElementById('fSpace').value = t.space || '';
+  document.getElementById('fSteps').value = (t.steps||[]).join('\n');
+  document.getElementById('fUseCases').value = (t.useCases||[]).join(', ');
+  document.getElementById('fCode').value = t.code || '';
+  document.getElementById('fTags').value = (t.tags||[]).join(', ');
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalBtn();
+}
+function closeModalBtn() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function saveTopic() {
+  const title = document.getElementById('fTitle').value.trim();
+  if (!title) { showToast('Please enter a title'); return; }
+  const obj = {
+    id: editingId || Date.now(),
+    title,
+    category: document.getElementById('fCat').value,
+    difficulty: document.getElementById('fDiff').value,
+    icon: '📄',
+    desc: document.getElementById('fDesc').value.trim(),
+    explain: document.getElementById('fExplain').value.trim(),
+    time: document.getElementById('fTime').value.split(',').map(s=>s.trim()).filter(Boolean),
+    space: document.getElementById('fSpace').value.trim(),
+    steps: document.getElementById('fSteps').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    useCases: document.getElementById('fUseCases').value.split(',').map(s=>s.trim()).filter(Boolean),
+    code: document.getElementById('fCode').value.trim(),
+    tags: document.getElementById('fTags').value.split(',').map(s=>s.trim()).filter(Boolean),
+  };
+  // auto icon
+  const iconMap = {'Data Structure':'📦','Algorithm':'⚙️','Pattern':'🗺','Custom':'📝'};
+  obj.icon = iconMap[obj.category] || '📄';
+
+  if (editingId) {
+    const idx = topics.findIndex(t => t.id === editingId);
+    topics[idx] = obj;
+    showToast('Topic updated!');
+  } else {
+    topics.push(obj);
+    showToast('Topic added!');
+  }
+  saveData();
+  closeModalBtn();
+  renderCards();
+}
+
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
+function deleteTopic(id) {
+  if (!confirm('Delete this topic?')) return;
+  topics = topics.filter(t => t.id !== id);
+  bookmarks.delete(id);
+  saveData();
+  renderCards();
+  showToast('Deleted');
+}
+function toggleBookmark(id, btn) {
+  if (bookmarks.has(id)) {
+    bookmarks.delete(id);
+    btn.classList.remove('bookmarked');
+    showToast('Removed from bookmarks');
+  } else {
+    bookmarks.add(id);
+    btn.classList.add('bookmarked');
+    showToast('Bookmarked!');
+  }
+  saveData();
+  if (currentView === 'bookmarks') renderCards();
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function switchView(view, el) {
+  currentView = view; currentCat = null;
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  el.classList.add('active');
+  const titles = { all: ['All Topics', 'Browse all data structures, algorithms and patterns'], bookmarks: ['Bookmarked', 'Your saved topics'] };
+  document.getElementById('mainTitle').textContent = titles[view][0];
+  document.getElementById('mainSub').textContent = titles[view][1];
+  renderCards();
+}
+function filterCat(cat, el) {
+  currentView = 'all'; currentCat = cat;
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mainTitle').textContent = cat + 's';
+  document.getElementById('mainSub').textContent = `All ${cat.toLowerCase()} topics`;
+  renderCards();
+}
+function toggleDiff(diff, btn) {
+  if (currentDiffs.has(diff)) { currentDiffs.delete(diff); btn.classList.remove('active'); }
+  else { currentDiffs.add(diff); btn.classList.add('active'); }
+  renderCards();
+}
+function doSearch(q) {
+  searchQuery = q;
+  currentCat = null;
+  renderCards();
+}
+function setLayout(mode, btn) {
+  layoutMode = mode;
+  document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadData();
+renderCards();
+</script>
+</body>
+</html>
